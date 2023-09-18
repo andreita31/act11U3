@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>act11U3</title>
+</head>
+<body>
+    
+    <div class="container" id="container_app">
+        <form action="">
+            <fieldset>
+                <legend>Email:</legend>
+                <input v-model="email" type="email" placeholder="Email" >
+                <legend>Password:</legend>
+                <input v-model="pass" type="password" placeholder="Password" >
+            </fieldset>
+            <button @click="login" type="button">Access</button>
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup(){ 
+                
+                users = ref([]);
+                email = ref('');
+                pass = ref('');
+
+                return {
+                    users,
+                    email,
+                    pass
+                }
+            },
+            methods:{
+                async login(){
+                    //1 Extraer datos
+                    const response =  await fetch("users.json");
+                    const users = await response.json();
+                    let login = false;
+                    
+                    //2 recorrer los datos
+                    // users.forEach((user)=>{
+                    //     //3 Comprobar si el usuario existe
+                    //     if(this.email == user.email){
+                    //         if(this.pass == user.password){
+                    //             alert("Bienvenido")
+                    //             console.log(user.name)
+                    //             login = true;
+                    //         }
+                    //     }
+                    // });
+
+                    const map = users.map((user)=>{
+                        if(this.email == user.email){
+                            if(this.pass == user.password){
+                                alert("Bienvenido")
+                                console.log(user.name)
+                                login = true;
+                            }
+                        }
+                    });
+                    if(!login){
+                        alert("Verifique su información");
+                    }
+                }
+            }
+        }).mount('#container_app')
+
+    </script>
+</body>
+</html>
