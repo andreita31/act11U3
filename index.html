@@ -1,76 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>act11U3</title>
-</head>
-<body>
-    
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td,
+      th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body>
     <div class="container" id="container_app">
-        <form action="">
-            <fieldset>
-                <legend>Email:</legend>
-                <input v-model="email" type="email" placeholder="Email" >
-                <legend>Password:</legend>
-                <input v-model="pass" type="password" placeholder="Password" >
-            </fieldset>
-            <button @click="login" type="button">Access</button>
-        </form>
+      <form action="" v-if="!is_login">
+        <fieldset>
+          <legend>Email:</legend>
+          <input v-model="email" type="email" placeholder="Email" />
+
+          <legend>Password:</legend>
+          <input v-model="pass" type="password" placeholder="Password" />
+        </fieldset>
+        <button @click="login" type="button">Access</button>
+      </form>
+
+      <table v-if="is_login">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>City</th>
+        </tr>
+        <tr v-for="i in users">
+          <td>{{i.name}}</td>
+          <td>{{i.email}}</td>
+          <td>{{i.address.street}}, {{i.address.suite}}</td>
+          <td>{{i.address.city}}</td>
+        </tr>
+      </table>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="text/javascript">
-        const { createApp, ref } = Vue
+      const { createApp, ref } = Vue;
 
-        createApp({
-            setup(){ 
-                
-                users = ref([]);
-                email = ref('');
-                pass = ref('');
+      createApp({
+        setup() {
+          users = ref([]);
+          email = ref("andrea@gmail.com");
+          pass = ref("123");
+          let temp = localStorage.getItem("is_login");
+          if (temp == null) {
+            temp = false;
+          }
+          is_login = ref(temp);
 
-                return {
-                    users,
-                    email,
-                    pass
+          return {
+            users,
+            email,
+            pass,
+            is_login,
+          };
+        },
+        mounted: function () {
+          const getUsers = async () => {
+            const response = await fetch("users.json?v=1.1");
+            const temp_users = await response.json();
+            this.users = temp_users;
+          };
+          if(this.is_login)
+            getUsers();
+        },
+        methods: {
+          async login() {
+            //1 Extraer datos
+            const response =  await fetch("users.json?v=1.1");
+            this.users = await response.json();
+            this.is_login = false;
+
+            //2 recorrer los datos
+            // users.forEach((user)=>{
+            //     //3 Comprobar si el usuario existe
+            //     if(this.email == user.email){
+            //         if(this.pass == user.password){
+            //             alert("Bienvenido")
+            //             console.log(user.name)
+            //             login = true;
+            //         }
+            //     }
+            // });
+
+            const map = this.users.map((user) => {
+              if (this.email == user.email) {
+                if (this.pass == user.password) {
+                  console.log(user.name);
+                  this.is_login = true;
+                  alert("Bienvenido");
+                  // this.update(users)
+                  localStorage.setItem("user_data", JSON.stringify(user));
+                  localStorage.setItem("is_login", "true");
                 }
-            },
-            methods:{
-                async login(){
-                    //1 Extraer datos
-                    const response =  await fetch("users.json");
-                    const users = await response.json();
-                    let login = false;
-                    
-                    //2 recorrer los datos
-                    // users.forEach((user)=>{
-                    //     //3 Comprobar si el usuario existe
-                    //     if(this.email == user.email){
-                    //         if(this.pass == user.password){
-                    //             alert("Bienvenido")
-                    //             console.log(user.name)
-                    //             login = true;
-                    //         }
-                    //     }
-                    // });
-
-                    const map = users.map((user)=>{
-                        if(this.email == user.email){
-                            if(this.pass == user.password){
-                                alert("Bienvenido")
-                                console.log(user.name)
-                                login = true;
-                            }
-                        }
-                    });
-                    if(!login){
-                        alert("Verifique su información");
-                    }
-                }
+              }
+            });
+            if (!this.is_login) {
+              alert("Verifique su información");
             }
-        }).mount('#container_app')
-
+          }
+        },
+      }).mount("#container_app");
     </script>
-</body>
+  </body>
 </html>
