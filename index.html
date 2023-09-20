@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>act11U3</title>
     <style>
+        body{
+            background-color: lightsteelblue;
+        }
+        form{
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 25px;
+        }
+        input{
+            height: 25px;
+            font-size: 15px;
+        }
+        button{
+            width: 100px;
+        }
+        .container{
+            width: 70%;
+        }
       table {
         font-family: arial, sans-serif;
         border-collapse: collapse;
@@ -80,13 +97,12 @@
             const temp_users = await response.json();
             this.users = temp_users;
           };
-          if(this.is_login)
-            getUsers();
+          if (this.is_login) getUsers();
         },
         methods: {
           async login() {
             //1 Extraer datos
-            const response =  await fetch("users.json?v=1.1");
+            const response = await fetch("users.json?v=1.1");
             this.users = await response.json();
             this.is_login = false;
 
@@ -117,7 +133,7 @@
             if (!this.is_login) {
               alert("Verifique su información");
             }
-          }
+          },
         },
       }).mount("#container_app");
     </script>
